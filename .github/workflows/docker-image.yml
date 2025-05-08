@@ -9,6 +9,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./src
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -26,7 +30,7 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME:latest \
                        -t $IMAGE_NAME:$TIMESTAMP \
-                       -t $IMAGE_NAME:$COMMIT_HASH ./src/DashTwo.SARP
+                       -t $IMAGE_NAME:$COMMIT_HASH ./DashTwo.SARP
 
       - name: Push Docker Image to GHCR
         run: |
