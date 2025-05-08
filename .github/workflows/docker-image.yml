@@ -18,6 +18,7 @@ jobs:
       run:
         working-directory: ./src
     env:
+      DOCKER_BUILDKIT: 1
       DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}/
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/sarp
       TAG: latest
@@ -36,15 +37,15 @@ jobs:
   
       - name: Tag Docker Image
         run: |
-          docker tag $IMAGE_NAME:${{ env.TAG }} $IMAGE_NAME:$TIMESTAMP
-          docker tag $IMAGE_NAME:${{ env.TAG }} $IMAGE_NAME:$COMMIT
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.IMAGE_NAME }}:${{ env.COMMIT }}
 
       - name: List all Docker Images
         run: docker images
 
       - name: Push Docker Image to GHCR
         run: |
-          docker push $IMAGE_NAME:${{ env.TAG }}
-          docker push $IMAGE_NAME:$TIMESTAMP
-          docker push $IMAGE_NAME:$COMMIT
+          docker push ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          docker push ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+          docker push ${{ env.IMAGE_NAME }}:${{ env.COMMIT }}
 
