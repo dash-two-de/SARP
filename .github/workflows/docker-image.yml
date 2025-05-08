@@ -1,9 +1,11 @@
 name: Build and Push to GHCR
 
+
 permissions:
   contents: read
   packages: write
-  
+  actions: write
+
 on:
   push:
     branches:
