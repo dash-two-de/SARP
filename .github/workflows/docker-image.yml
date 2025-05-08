@@ -22,7 +22,7 @@ jobs:
       DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}/
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/sarp
       TAG: latest
-      TIMESTAMP: ${{ format('YYYYMMDDHHmmss', github.run_id) }}
+      TIMESTAMP: ${{ github.run_id }}-${{ github.run_number }}
       COMMIT: ${{ github.sha }}
 
     steps:
