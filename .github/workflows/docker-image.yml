@@ -19,18 +19,18 @@ jobs:
 
       - name: Set up Environment Variables
         run: |
-          echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/dashtwo-sarp" >> $GITHUB_ENV
+          echo "DOCKER_REGISTRY=ghcr.io/${{ github.repository_owner }}/" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${DOCKER_REGISTRY}sarp" >> $GITHUB_ENV
           echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
           echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker Image
-        run: |
-          docker build -t $IMAGE_NAME:latest \
-                       -t $IMAGE_NAME:$TIMESTAMP \
-                       -t $IMAGE_NAME:$COMMIT_HASH ./DashTwo.SARP
+      - name: Build Docker Compose Services
+        run: docker-compose build
+        env:
+          DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
 
       - name: Push Docker Image to GHCR
         run: |
