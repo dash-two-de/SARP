@@ -18,34 +18,39 @@ jobs:
       run:
         working-directory: ./src
     env:
-      DOCKER_BUILDKIT: 1
       DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}/
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/sarp
-      TAG: latest
-      TIMESTAMP: ${{ github.run_id }}-${{ github.run_number }}
-      COMMIT: ${{ github.sha }}
+      IMAGE_TAG: latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "value=$(date -u +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Compose Services
         run: docker compose build
-  
+        env:
+          TAG: ${{ env.IMAGE_TAG }}
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+
       - name: Tag Docker Image
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
-          docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.IMAGE_NAME }}:${{ env.COMMIT }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.IMAGE_NAME }}:${{ steps.timestamp.outputs.value }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: List all Docker Images
         run: docker images
 
       - name: Push Docker Image to GHCR
         run: |
-          docker push ${{ env.IMAGE_NAME }}:${{ env.TAG }}
-          docker push ${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
-          docker push ${{ env.IMAGE_NAME }}:${{ env.COMMIT }}
+          docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.IMAGE_NAME }}:${{ steps.timestamp.outputs.value }}
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
