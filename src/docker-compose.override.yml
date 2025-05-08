@@ -1,5 +1,6 @@
 services:
   dashtwo.sarp:
+    image: sarp:${TAG:-dev}
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080

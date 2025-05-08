@@ -31,7 +31,13 @@ jobs:
         run: docker compose build
         env:
           DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
+          TAG: "latest"
 
+      - name: Tag Docker Image
+        run: |
+          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP
+          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$COMMIT_HASH
+          
       - name: Push Docker Image to GHCR
         run: |
           docker push $IMAGE_NAME:latest

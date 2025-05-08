@@ -1,6 +1,6 @@
 services:
   dashtwo.sarp:
-    image: ${DOCKER_REGISTRY-}sarp
+    image: ${DOCKER_REGISTRY-}sarp:latest
     restart: unless-stopped
     depends_on:
       - wg-easy
