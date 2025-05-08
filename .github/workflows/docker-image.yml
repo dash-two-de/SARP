@@ -17,41 +17,34 @@ jobs:
     defaults:
       run:
         working-directory: ./src
+    env:
+      DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}/
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/sarp
+      TAG: latest
+      TIMESTAMP: $(date +%Y%m%d%H%M%S)
+      COMMIT: ${{ github.sha }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up Environment Variables
-        run: |
-          echo "DOCKER_REGISTRY=ghcr.io/${{ github.repository_owner }}/" >> $GITHUB_ENV
-          echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/sarp" >> $GITHUB_ENV
-          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-          echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Compose Services
         run: docker compose build
-        env:
-          DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
-          TAG: "latest"
-
-      - name: List all Docker Images
-        run: docker images      
   
       - name: Tag Docker Image
         run: |
-          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP
-          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$COMMIT_HASH
+          docker tag $IMAGE_NAME:${{ env.TAG }} $IMAGE_NAME:$TIMESTAMP
+          docker tag $IMAGE_NAME:${{ env.TAG }} $IMAGE_NAME:$COMMIT
 
       - name: List all Docker Images
         run: docker images
 
       - name: Push Docker Image to GHCR
         run: |
-          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:${{ env.TAG }}
           docker push $IMAGE_NAME:$TIMESTAMP
-          docker push $IMAGE_NAME:$COMMIT_HASH
+          docker push $IMAGE_NAME:$COMMIT
 
