@@ -1,0 +1,28 @@
+services:
+  dashtwo.sarp:
+    image: ${DOCKER_REGISTRY-}dashtwosarp
+    restart: unless-stopped
+    depends_on:
+      - wg-easy
+    build:
+      context: .
+      dockerfile: DashTwo.SARP/Dockerfile
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy
+    container_name: wg-easy
+    restart: unless-stopped
+    environment:
+      - WG_HOST=0.0.0.0
+      - PASSWORD=
+      - WG_PORT=51820
+    ports:
+      - "51820:51820/udp"
+      # - "51821:51821/tcp"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    volumes:
+      - ./.docker/wireguard:/etc/wireguard
