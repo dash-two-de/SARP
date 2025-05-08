@@ -23,12 +23,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$TIMESTAMP -t $IMAGE_NAME:$COMMIT_HASH ./DashTwo.SARP
-        working-directory: ./src
-
-      # - name: Build Docker Image (use docker compose)
-      #   run: docker compose build .
-      #   working-directory: ./src
+        run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$TIMESTAMP -t $IMAGE_NAME:$COMMIT_HASH ./src/DashTwo.SARP
 
       - name: Push to GHCR
         run: docker push --all-tags
