@@ -1,5 +1,9 @@
 name: Build and Push to GHCR
 
+permissions:
+  contents: read
+  packages: write
+  
 on:
   push:
     branches:
@@ -37,7 +41,7 @@ jobs:
         run: |
           docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP
           docker tag $IMAGE_NAME:latest $IMAGE_NAME:$COMMIT_HASH
-          
+
       - name: Push Docker Image to GHCR
         run: |
           docker push $IMAGE_NAME:latest
