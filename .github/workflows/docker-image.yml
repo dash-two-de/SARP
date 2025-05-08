@@ -28,7 +28,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Compose Services
-        run: docker-compose build
+        run: docker compose build
         env:
           DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
 
